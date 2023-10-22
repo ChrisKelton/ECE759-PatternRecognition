@@ -49,7 +49,7 @@ def milestone_two(
                                             [5.0, 1.5]]
     test_cases: Dict[int, Dict[str, str]] = {}
     for k in k_vals:
-        knn = KNeighborsClassifier(n_neighbors=k)
+        knn = KNeighborsClassifier(n_neighbors=k, metric="cityblock")
         knn.fit(preprocessing(features), y_truth)
         for idx, val_to_predict in enumerate(values_to_predict):
             prediction = knn.predict(preprocessing(np.asarray(val_to_predict).reshape(-1, 2)))
