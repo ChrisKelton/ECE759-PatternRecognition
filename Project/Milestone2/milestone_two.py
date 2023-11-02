@@ -1,16 +1,15 @@
 from pathlib import Path
 from typing import List, Dict, Optional, Callable
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import confusion_matrix
 import seaborn as sns
-import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+from sklearn.neighbors import KNeighborsClassifier
 
-from Project.Milestone1.dataframe import load_iris_dataset
 from Project.Milestone1.utils import split_features_by_class
-from utils import probability_error_from_confusion_matrix
+from utils import probability_error_from_confusion_matrix, load_reduced_iris_dataframe
 
 
 def knn_prediction(r: float, k: int, N: int) -> float:
@@ -18,15 +17,13 @@ def knn_prediction(r: float, k: int, N: int) -> float:
 
 
 def milestone_two(
-        iris_data_path: Path,
-        base_out_path: Optional[Path] = None,
-        *,
-        allow_floats: bool = False,
+    iris_data_path: Path,
+    base_out_path: Optional[Path] = None,
+    *,
+    allow_floats: bool = False,
 ):
-    df = load_iris_dataset(iris_data_path)
-    cols_to_drop: List[str] = ["Sepal length [cm]", "Sepal width [cm]"]
-    df.drop(cols_to_drop, axis=1, inplace=True)
-    feature_mapping = split_features_by_class(df, "Plant Type", "Iris-", map_by_feature=False)
+    df = load_reduced_iris_dataframe(iris_data_path)
+    feature_mapping = split_features_by_class(df, "Plant Type", map_by_feature=False)
     features: List[np.ndarray] = []
     y_truth: List[int] = []
     y_truth_map: Dict[int, str] = {}
@@ -87,12 +84,14 @@ def milestone_two(
         plt.figure(figsize=(10, 7))
         sns.heatmap(df_k_1, annot=True)
         plt.savefig(str(k_1_confusion_matrix_path))
+        plt.tight_layout()
         plt.close()
 
         k_3_confusion_matrix_path = base_out_path / "k=3-confusion_matrix.png"
         plt.figure(figsize=(10, 7))
         sns.heatmap(df_k_3, annot=True, )
         plt.savefig(str(k_3_confusion_matrix_path))
+        plt.tight_layout()
         plt.close()
 
     k_1_total_pe, k_1_pe_vals = probability_error_from_confusion_matrix(k_1_confusion_matrix, y_true_unique)
